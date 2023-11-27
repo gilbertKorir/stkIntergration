@@ -137,6 +137,6 @@ app.get('/fetchTransactions', (req, res) => {
       })
       .catch(err => {
         console.error('Error fetching transactions:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error has occured' });
       });
   });
