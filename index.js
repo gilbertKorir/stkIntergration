@@ -26,7 +26,11 @@ mongoose.connect(url,{ writeConcern: { w: 'majority' }}).then(() => {
     console.log(error.message);
 });
 
-app.get("/token", generateToken,(req, res)=>{
+// app.get("/token",(req, res)=>{
+//     res.json(200).access_token;
+// })
+
+app.get("/stkPush", generateToken,(req, res)=>{
     res.status(200).json({access_token: req.access_token});
 })
 
@@ -105,7 +109,6 @@ app.post("/stkPush", generateToken, (req, res)=>{
 })
 
 app.post("/callback", (req, res)=>{
-
     const callbackData = req.body;
     if(!callbackData.Body.stkCallback.CallbackMetadata){
         return res.json("ok");
@@ -125,3 +128,15 @@ app.post("/callback", (req, res)=>{
         console.log(err);
     });
 })
+
+app.get('/fetchTransactions', (req, res) => {
+    Payment.find({})
+      .then(transactions => {
+        console.log('Transactions:', transactions);
+        res.json(transactions);
+      })
+      .catch(err => {
+        console.error('Error fetching transactions:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      });
+  });
