@@ -19,6 +19,7 @@ app.use(cors());
 app.get("/", (req, res)=>{
     res.send("<h1>Mpesa Intergrations</h1>")
 })
+
 const url = process.env.mongo_url;
 mongoose.connect(url,{ writeConcern: { w: 'majority' }}).then(() => {
     console.log("connected successfully");
@@ -30,7 +31,7 @@ mongoose.connect(url,{ writeConcern: { w: 'majority' }}).then(() => {
 //     res.json(200).access_token;
 // })
 
-app.get("/stkPush", generateToken,(req, res)=>{
+app.get("/token", generateToken,(req, res)=>{
     res.status(200).json({access_token: req.access_token});
 })
 
@@ -59,11 +60,10 @@ function generateToken(req, res, next){
     )
 }
 
-app.post("/stkPush", generateToken, (req, res)=>{
+app.post("/stkCall", generateToken, (req, res)=>{
     const phone = req.body.phone.substring(1);
     const amount = req.body.amount;
-    const url =  process.env.PUSH_URL;
-    const callback = process.env.CALLBACK;
+     const url =  'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
     const auth = "Bearer " + req.access_token;
     const date = new Date();
      const shortCode = process.env.MPESA_PAYBILL;
@@ -85,6 +85,7 @@ app.post("/stkPush", generateToken, (req, res)=>{
             headers:{
                 "Authorization": auth
             },
+
             json:{
                 "BusinessShortCode": shortCode,
                 "Password": password,
@@ -94,7 +95,7 @@ app.post("/stkPush", generateToken, (req, res)=>{
                 "PartyA": `254${phone}`,
                 "PartyB": shortCode,
                 "PhoneNumber": `254${phone}`,
-                "CallBackURL": callback,
+                "CallBackURL": "https://shy-newt-jeans.cyclic.app/callback",
                 "AccountReference": "Gtech",
                 "TransactionDesc": "Payment of service" 
             }
